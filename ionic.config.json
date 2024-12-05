@@ -1,0 +1,7 @@
+{
+  "name": "radiator-springs",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
