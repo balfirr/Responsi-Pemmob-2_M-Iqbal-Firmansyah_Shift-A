@@ -13,12 +13,12 @@ import {
 } from 'firebase/firestore';
 
 // interface data
-export interface Race {
+export interface story {
     id?: string;
     name: string;
     date: string;
     location: string;
-    result: string;
+    story: string;
     status: boolean;
     createdAt: Timestamp;
     updatedAt: Timestamp;
@@ -27,68 +27,68 @@ export interface Race {
 // operasi CRUD
 export const firestoreService = {
     // get collection ref
-    getRaceRef() {
+    getStoryRef() {
         const uid = auth.currentUser?.uid;
         if (!uid) throw new Error('User not authenticated');
-        return collection(db, 'users', uid, 'races');
+        return collection(db, 'users', uid, 'story');
     },
 
 		// create
-    async addRace(race: Omit<Race, 'id'>) {
+    async addStory(story: Omit<story, 'id'>) {
         try {
-            const raceRef = this.getRaceRef();
-            const docRef = await addDoc(raceRef, {
-                ...race,
+            const storyRef = this.getStoryRef();
+            const docRef = await addDoc(storyRef, {
+                ...story,
                 status: false,
                 createdAt: Timestamp.now(),
                 updatedAt: Timestamp.now()
             });
             return docRef.id;
         } catch (error) {
-            console.error('Error Tambah Race:', error);
+            console.error('Tidak dapat menambahkan cerita:', error);
             throw error;
         }
     },
 
 		// read
-    async getRaces(): Promise<Race[]> {
+    async getStory(): Promise<story[]> {
         try {
-            const raceRef = this.getRaceRef();
-            const q = query(raceRef, orderBy('updatedAt', 'desc'));
+            const storyRef = this.getStoryRef();
+            const q = query(storyRef, orderBy('updatedAt', 'desc'));
             const snapshot = await getDocs(q);
             return snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
-            } as Race));
+            } as story));
         } catch (error) {
-            console.error('Error Get Races:', error);
+            console.error('Error Get Story:', error);
             throw error;
         }
     },
 
 		// update
-    async updateRace(id: string, race: Partial<Race>) {
+    async updateStory(id: string, story: Partial<story>) {
         try {
-            const raceRef = this.getRaceRef();
-            const docRef = doc(raceRef, id);
+            const storyRef = this.getStoryRef();
+            const docRef = doc(storyRef, id);
             await updateDoc(docRef, {
-                ...race,
+                ...story,
                 updatedAt: Timestamp.now()
             });
         } catch (error) {
-            console.error('Error Update Race:', error);
+            console.error('Error Update Story:', error);
             throw error;
         }
     },
 
 		// delete
-    async deleteRace(id: string) {
+    async deleteStory(id: string) {
         try {
-            const raceRef = this.getRaceRef();
-            const docRef = doc(raceRef, id);
+            const storyRef = this.getStoryRef();
+            const docRef = doc(storyRef, id);
             await deleteDoc(docRef);
         } catch (error) {
-            console.error('Error Delete Race:', error);
+            console.error('Error Delete Story:', error);
             throw error;
         }
     }

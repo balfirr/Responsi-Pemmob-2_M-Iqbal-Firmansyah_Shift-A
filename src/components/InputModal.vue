@@ -11,14 +11,14 @@
         </ion-header>
         <ion-content>
             <ion-item>
-                <ion-input v-model="race.name" label="Name" label-placement="floating"
-                    placeholder="Enter Race Name"></ion-input>
+                <ion-input v-model="story.name" label="Name" label-placement="floating"
+                    placeholder="Enter Your Story Name"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-input v-model="race.date" type="date" label="Date" label-placement="floating"></ion-input>
+                <ion-input v-model="story.date" type="date" label="Date" label-placement="floating"></ion-input>
             </ion-item>
             <ion-item>
-                <ion-input v-model="race.location" label="Location" label-placement="floating"
+                <ion-input v-model="story.location" label="Location" label-placement="floating"
                     placeholder="Enter Location"></ion-input>
             </ion-item>
             <ion-row>
@@ -34,29 +34,29 @@
 <script setup lang="ts">
 import { IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonInput, IonRow, IonCol, IonItem, IonContent } from '@ionic/vue';
 import { close } from 'ionicons/icons';
-import { Race } from '@/utils/firestore';
+import { story } from '@/utils/firestore';
 
 const props = defineProps<{
     isOpen: boolean,
     editingId: string | null,
-    race: Partial<Race>
+    story: Partial<story>
 }>();
 
 const emit = defineEmits<{
     'update:isOpen': [value: boolean],
     'update:editingId': [value: string | null],
-    'submit': [item: Partial<Race>]
+    'submit': [item: Partial<story>]
 }>();
 
 const cancel = () => {
     emit('update:isOpen', false);
     emit('update:editingId', null);
-    props.race.name = '';
-    props.race.date = '';
-    props.race.location = '';
+    props.story.name = '';
+    props.story.date = '';
+    props.story.location = '';
 }
 const input = () => {
-    emit('submit', props.race);
+    emit('submit', props.story);
     cancel();
 }
 </script>

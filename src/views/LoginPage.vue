@@ -4,13 +4,13 @@
             <div id="container">
                 <!-- Title -->
                 <ion-text style="margin-bottom: 20px; text-align: center;">
-                    <h1>Praktikum Pemrograman Mobile</h1>
+                    <h1>Selamat Datanng Di Toystory</h1>
                 </ion-text>
 
                 <!-- Button Sign In -->
                 <ion-button @click="login" color="light">
                     <ion-icon slot="start" :icon="logoGoogle"></ion-icon>
-                    <ion-label>Sign In with Google</ion-label>
+                    <ion-label>Sign In Dengan Akun Google Anda</ion-label>
                 </ion-button>
             </div>
         </ion-content>

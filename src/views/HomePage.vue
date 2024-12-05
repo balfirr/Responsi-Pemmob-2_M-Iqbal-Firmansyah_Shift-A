@@ -21,15 +21,15 @@
       <div class="scrollable-container">
         <ion-list>
           <ion-item-sliding 
-            v-for="race in upcomingRaces" 
-            :key="race.id" 
-            :ref="(el) => setItemRef(el, race.id!)">
+            v-for="stories in story" 
+            :key="story.id"
+            :ref="(el) => setItemRef(el,story.id!)">
             <!-- Delete option -->
-            <ion-item-options side="start" @ionSwipe="handleDelete(race)">
+            <ion-item-options side="start" @ionSwipe="handleDelete(story)">
               <ion-item-option 
                 color="danger" 
                 expandable 
-                @click="handleDelete(race)">
+                @click="handleDelete(story)">
                 <ion-icon slot="icon-only" :icon="trash" size="large"></ion-icon>
               </ion-item-option>
             </ion-item-options>
@@ -39,27 +39,27 @@
               <ion-card>
                 <ion-card-header>
                   <ion-card-title class="ion-text-wrap limited-text">
-                    {{ race.name }}
+                    {{ story.name }}
                   </ion-card-title>
                   <ion-card-subtitle class="limited-text">
-                    {{ race.date }}
+                    {{ story.date }}
                   </ion-card-subtitle>
                 </ion-card-header>
                 <ion-card-content>
-                  <ion-badge>{{ getRelativeTime(race.updatedAt) }}</ion-badge>
+                  <ion-badge>{{ getRelativeTime(story.updatedAt) }}</ion-badge>
                 </ion-card-content>
               </ion-card>
             </ion-item>
 
             <!-- Edit and Status option -->
-            <ion-item-options side="end" @ionSwipe="handleStatus(race)">
-              <ion-item-option @click="handleEdit(race)">
+            <ion-item-options side="end" @ionSwipe="handleStatus(story)">
+              <ion-item-option @click="handleEdit(story)">
                 <ion-icon slot="icon-only" :icon="create" size="large"></ion-icon>
               </ion-item-option>
               <ion-item-option 
                 color="success" 
                 expandable 
-                @click="handleStatus(race)">
+                @click="handleStatus(story)">
                 <ion-icon 
                   slot="icon-only" 
                   :icon="checkmarkCircle" 
@@ -70,7 +70,7 @@
           </ion-item-sliding>
 
           <!-- No Active Todos -->
-          <ion-item v-if="upcomingRaces.length === 0" class="ion-text-center">
+          <ion-item v-if="upcomingStory.length === 0" class="ion-text-center">
             <ion-label>No strories today. Create a new one here!</ion-label>
           </ion-item>
         </ion-list>
@@ -86,15 +86,15 @@
             <div slot="content" class="scrollable-container">
               <ion-list>
                 <ion-item-sliding 
-                  v-for="race in pastRaces" 
-                  :key="race.id" 
-                  :ref="(el) => setItemRef(el, race.id!)">
+                  v-for="story in pastStory" 
+                  :key="story.id" 
+                  :ref="(el) => setItemRef(el, story.id!)">
                   <!-- Delete option -->
-                  <ion-item-options side="start" @ionSwipe="handleDelete(race)">
+                  <ion-item-options side="start" @ionSwipe="handleDelete(story)">
                     <ion-item-option 
                       color="danger" 
                       expandable 
-                      @click="handleDelete(race)">
+                      @click="handleDelete(story)">
                       <ion-icon slot="icon-only" :icon="trash" size="large"></ion-icon>
                     </ion-item-option>
                   </ion-item-options>
@@ -104,27 +104,27 @@
                     <ion-card>
                       <ion-card-header>
                         <ion-card-title class="ion-text-wrap limited-text">
-                          {{ race.name }}
+                          {{ story.name }}
                         </ion-card-title>
                         <ion-card-subtitle class="limited-text">
-                          {{ race.date }}
+                          {{ story.date }}
                         </ion-card-subtitle>
                       </ion-card-header>
                       <ion-card-content>
-                        <ion-badge>{{ getRelativeTime(race.updatedAt) }}</ion-badge>
+                        <ion-badge>{{ getRelativeTime(story.updatedAt) }}</ion-badge>
                       </ion-card-content>
                     </ion-card>
                   </ion-item>
 
                   <!-- Edit and Status option -->
-                  <ion-item-options side="end" @ionSwipe="handleStatus(race)">
-                    <ion-item-option @click="handleEdit(race)">
+                  <ion-item-options side="end" @ionSwipe="handleStatus(story)">
+                    <ion-item-option @click="handleEdit(story)">
                       <ion-icon slot="icon-only" :icon="create" size="large"></ion-icon>
                     </ion-item-option>
                     <ion-item-option 
                       color="warning" 
                       expandable 
-                      @click="handleStatus(race)">
+                      @click="handleStatus(story)">
                       <ion-icon 
                         slot="icon-only" 
                         :icon="close" 
@@ -135,8 +135,8 @@
                 </ion-item-sliding>
 
                 <!-- No Completed Todos -->
-                <ion-item v-if="pastRaces.length === 0" class="ion-text-center">
-                  <ion-label>No completed races</ion-label>
+                <ion-item v-if="pastStory.length === 0" class="ion-text-center">
+                  <ion-label>No new story</ion-label>
                 </ion-item>
               </ion-list>
             </div>
@@ -153,7 +153,7 @@
       <InputModal 
         v-model:isOpen="isOpen" 
         v-model:editingId="editingId" 
-        :race="race" 
+        :story="story" 
         @submit="handleSubmit" />
     </ion-content>
   </ion-page>
@@ -201,25 +201,25 @@ import {
 
 import InputModal from '@/components/InputModal.vue';
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { firestoreService, type Race } from '@/utils/firestore';
+import { firestoreService, type story } from '@/utils/firestore';
 import { formatDistanceToNow } from 'date-fns';
 
 // State variables
 const isOpen = ref(false);
 const editingId = ref<string | null>(null);
-const races = ref<Race[]>([]);
-const race = ref<Partial<Race>>({
+const stories = ref<story[]>([]);
+const story = ref<Partial<story>>({
   name: '',
   date: '',
   location: '',
-  result: '',
+  story: '',
   status: false
 });
-const upcomingRaces = computed(() => races.value.filter((race) => 
-  !race.status || new Date(race.date) > new Date()
+const upcomingStory = computed(() => stories.value.filter((story) => 
+  !story.status || new Date(story.date) > new Date()
 ));
-const pastRaces = computed(() => races.value.filter((race) => 
-  race.status && new Date(race.date) <= new Date()
+const pastStory = computed(() => stories.value.filter((story) => 
+  story.status && new Date(story.date) <= new Date()
 ));
 const itemRefs = ref<Map<string, HTMLIonItemSlidingElement>>(new Map());
 const timeUpdateTrigger = ref(0);
@@ -251,7 +251,7 @@ const getRelativeTime = (date: any) => {
 };
 
 // CRUD operations
-const loadRaces = async (isLoading = true) => {
+const loadStory = async (isLoading = true) => {
   let loading;
   if (isLoading) {
     loading = await loadingController.create({ message: 'Loading...' });
@@ -259,7 +259,7 @@ const loadRaces = async (isLoading = true) => {
   }
 
   try {
-    races.value = await firestoreService.getRaces();
+    stories.value = await firestoreService.getStory();
   } catch (error) {
     console.error(error);
   } finally {
@@ -269,7 +269,7 @@ const loadRaces = async (isLoading = true) => {
 
 const handleRefresh = async (event: any) => {
   try {
-    await loadRaces(false);
+    await loadStory(false);
   } catch (error) {
     console.error('Error refreshing:', error);
   } finally {
@@ -277,63 +277,63 @@ const handleRefresh = async (event: any) => {
   }
 };
 
-const handleSubmit = async (submittedRace: Partial<Race>) => {
-  if (!submittedRace.name) {
-    await showToast('Race name is required', 'warning', warningOutline);
+const handleSubmit = async (submittedStory: Partial<story>) => {
+  if (!submittedStory.name) {
+    await showToast('Story name is required', 'warning', warningOutline);
     return;
   }
   try {
     if (editingId.value) {
-      await firestoreService.updateRace(editingId.value, submittedRace as Race);
+      await firestoreService.updateStory(editingId.value, submittedStory as story);
     } else {
-      await firestoreService.addRace(submittedRace as Race);
+      await firestoreService.addStory(submittedStory as story);
     }
-    await loadRaces();
+    await loadStory();
   } catch (error) {
-    await showToast('Error submitting race', 'danger', closeCircle);
-    console.error('Error submitting race:', error);
+    await showToast('Error submitting new story', 'danger', closeCircle);
+    console.error('Error submitting new story:', error);
   } finally {
     isOpen.value = false;
     editingId.value = null;
   }
 };
 
-const handleDelete = async (race: Race) => {
+const handleDelete = async (story: story) => {
   try {
-    await firestoreService.deleteRace(race.id!);
-    await showToast('Race deleted successfully', 'success', trash);
-    loadRaces();
+    await firestoreService.deleteStory(story.id!);
+    await showToast('Your story deleted successfully', 'success', trash);
+    loadStory();
   } catch (error) {
-    await showToast('Error deleting race', 'danger', closeCircle);
-    console.error('Error deleting race:', error);
+    await showToast('Error deleting your story', 'danger', closeCircle);
+    console.error('Error deleting your story:', error);
   }
 };
 
-const handleEdit = (raceItem: Race) => {
+const handleEdit = (storyItem: story) => {
   isOpen.value = true;
-  editingId.value = raceItem.id!;
-  race.value = {
-    name: raceItem.name,
-    date: raceItem.date,
-    location: raceItem.location,
-    result: raceItem.result,
-    status: raceItem.status
+  editingId.value = storyItem.id!;
+  story.value = {
+    name: storyItem.name,
+    date: storyItem.date,
+    location: storyItem.location,
+    story: storyItem.story,
+    status: storyItem.status
   };
 };
 
-const handleStatus = async (raceItem: Race) => {
-  if (!raceItem.id) return;
+const handleStatus = async (storyItem: story) => {
+  if (!storyItem.id) return;
   
   try {
-    await firestoreService.updateRace(raceItem.id, {
-      ...raceItem,
-      status: !raceItem.status
+    await firestoreService.updateStory(storyItem.id, {
+      ...storyItem,
+      status: !storyItem.status
     });
-    const message = raceItem.status
-      ? 'Race marked as active'
-      : 'Race marked as completed';
+    const message = storyItem.status
+      ? 'Story marked as active'
+      : 'Story marked as completed';
     await showToast(message);
-    await loadRaces();
+    await loadStory();
   } catch (error) {
     await showToast('Error updating status', 'danger', closeCircle);
     console.error('Error updating status:', error);
@@ -343,7 +343,7 @@ const handleStatus = async (raceItem: Race) => {
 // Auto-refresh relative time every minute
 let interval: NodeJS.Timeout;
 onMounted(() => {
-  loadRaces();
+  loadStory();
   interval = setInterval(() => {
     timeUpdateTrigger.value++;
   }, 60000);
